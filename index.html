@@ -33,8 +33,12 @@ Drivers and segment analysis
 <p class="small">85 texts: 54 attacks (20 written specifically to dodge the code rules) and 31 benign requests. A model layer helps most on paraphrased attacks; the rules cost nothing and block nothing benign.</p>
 <h2>Defences off vs on, live</h2><p>PENDING: the first live run used a crude score (it counted any request that passed the guard as a successful attack), so its numbers are not shown. The corrected run (harm judged by code per attack) is queued; it needs OpenRouter credit.</p>
 <p class="small">Same attacks (a poisoned filing passage and hostile requests) and the same clean cases, run end to end with the real models. Attack success is judged by code, for example whether a canary phrase appears in the note.</p>
+<h2>Does table-aware chunking help? (BM25, 30 labelled queries)</h2>
+<table><tr><th>Retrieval setup</th><th>Recall@5</th></tr><tr><td>Table-aware chunks + company/year filters + table-intent routing</td><td>70.0%</td></tr>
+<tr><td>Table-aware chunks, no table-intent routing</td><td>16.7%</td></tr><tr><td>Plain-text chunks (tables flattened)</td><td>66.7%</td></tr></table>
+<p class="small">Chunk shape alone is not the win: the routing of numeric questions to tables does the work. Plain text is within one query of table-aware here. Plain-text gold uses a looser rule (label near number) because rows no longer exist. Dense search and reranking are pending (need API credit).</p>
 <h2>Security and memory</h2>
 <p>Sandbox: no network, no shell, no file access, empty environment (a real hole was found by our own test and fixed). Memory: four whitelisted style preferences, a private watchlist the model never sees, export and forget endpoints. Lessons from Reflexion are human-approved and frozen before the held-out run.</p>
 <h2>Limits, stated plainly</h2>
-<ul><li>One run per arm on the dev set; spread not measured yet.</li><li>The held-out set has not been run three times yet.</li><li>The LLM judge is uncalibrated: no human-labelled agreement score yet.</li><li>Costs use an assumed blended price per million tokens.</li><li>This page shows recorded results; it is not a live demo.</li></ul>
+<ul><li>One run per arm on the dev set; spread not measured yet.</li><li>The held-out set has not been run three times yet.</li><li>The LLM judge is uncalibrated: a 40-sentence blind label sheet is ready, but no human has labelled it yet, so there is no agreement score (Cohen's kappa).</li><li>Costs use list prices at an assumed 80/20 input/output token split.</li><li>This page shows recorded results; it is not a live demo.</li></ul>
 </main></body></html>
