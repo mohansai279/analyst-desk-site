@@ -32,7 +32,7 @@ a{color:var(--acc)}.small{color:var(--mute);font-size:.85rem}
 
 <h2>Results so far (dev set, 27 cases)</h2>
 <div class="card" id="res"></div>
-<p class="small">The fixed workflow matches the team on getting numbers right. The team's value is deeper analysis: about 15 analysis sentences per note against about 2. Some reruns are pending API credit. Details on the results page.</p>
+<p class="small">The fixed workflow matches the team on getting numbers right. The team's value is deeper analysis: about 15 analysis sentences per note against about 2. Held-out runs and a few other reruns are still pending. Details on the results page.</p>
 
 <h2>Tools</h2>
 <div class="tags"><span>LangGraph</span><span>FastMCP</span><span>OpenRouter models</span><span>BM25 + vector search (RRF)</span><span>Reranker</span><span>SEC 10-K + XBRL</span><span>Python sandbox</span><span>FastAPI</span><span>Docker Compose</span><span>GitHub Actions</span><span>Prometheus + Grafana</span></div>
@@ -41,6 +41,6 @@ a{color:var(--acc)}.small{color:var(--mute);font-size:.85rem}
 const S=[["Guard","Checks the request first: blocks advice requests, injections and off-topic asks."],["Memory","Loads the analyst's saved preferences and watchlist. Only whitelisted items are kept."],["Planner","Splits the question into research tasks and keeps them within budget."],["Researchers","Several agents search the filings at the same time using keyword + vector search."],["Quant","Does the calculations in a locked sandbox: no internet, no files, no shell."],["Writer","Drafts the note with placeholders instead of numbers, and cites passages."],["Critic","Reviews the draft and sends it back to be fixed, at most twice."],["Verify","Code fills each number from XBRL facts and re-checks every one. A mismatch blocks the note."],["Approval","A person approves the exact note. Any later change breaks the approval."]];
 const f=document.getElementById('flow'),d=document.getElementById('detail');
 S.forEach((s,i)=>{const e=document.createElement('div');e.className='step';e.innerHTML='<b>'+(i+1)+'</b>'+s[0];e.onclick=()=>{document.querySelectorAll('.step').forEach(x=>x.classList.remove('on'));e.classList.add('on');d.innerHTML='<b>'+s[0]+'</b><p>'+s[1]+'</p>'};f.appendChild(e);if(i<S.length-1){const a=document.createElement('div');a.className='arrow';a.textContent='›';f.appendChild(a)}});
-const R=[["Fixed workflow",27],["Single agent",21],["Team, critic off",25],["Full team (22 Nov run)",27]];
+const R=[["Fixed workflow",27],["Single agent",21],["Team, critic off",25],["Full team (25 Nov, current code)",26],["Full team (22 Nov, older code)",27]];
 document.getElementById('res').innerHTML=R.map(r=>'<div>'+r[0]+': <b>'+r[1]+' / 27</b> successful</div><div class="bar"><i style="width:'+(r[1]/27*100)+'%"></i></div>').join('');
 </script></body></html>
