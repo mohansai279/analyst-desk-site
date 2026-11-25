@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analyst Desk: how it works</title>
+<style>
+:root{--bg:#0f1420;--card:#171e2e;--ink:#e8ecf5;--mute:#9aa6bf;--ok:#3ecf8e;--bad:#ff6b6b;--acc:#6ea8ff;--line:#2a3550}
+*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}h1{font-size:2rem;margin:0 0 6px}h2{margin:44px 0 14px;font-size:1.3rem}
+p.lead{color:var(--mute);margin:0 0 8px}.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.row{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}.bad{border-color:#5b2f3a}.good{border-color:#245a45}
+.note{font-family:ui-monospace,Consolas,monospace;font-size:.92rem;background:#0b101a;border-radius:8px;padding:12px;margin-top:10px}
+.x{color:var(--bad)}.v{color:var(--ok)}.ph{color:var(--acc)}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin-top:10px}
+.step{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:.15s}
+.step:hover,.step.on{border-color:var(--acc);transform:translateY(-2px)}.step b{display:block;color:var(--acc);font-size:.85rem}
+.arrow{align-self:center;color:var(--mute)}#detail{margin-top:14px;min-height:64px}
+.tags span{display:inline-block;background:#1f2a44;border:1px solid var(--line);border-radius:999px;padding:3px 11px;margin:3px 4px 3px 0;font-size:.85rem}
+.bar{height:10px;background:#0b101a;border-radius:6px;overflow:hidden;margin:6px 0 12px}.bar i{display:block;height:100%;background:var(--acc)}
+a{color:var(--acc)}.small{color:var(--mute);font-size:.85rem}
+</style></head><body><div class="wrap">
+<h1>Analyst Desk</h1><p class="lead">Finance research notes where every number traces to an official fact.</p>
+<p class="small"><a href="index.html">&larr; Results page</a></p>
+
+<h2>The problem</h2>
+<div class="row"><div class="card bad"><b>A normal AI writes</b><div class="note">Revenue grew to <span class="x">$412.7 billion</span> in 2024, driven by cloud.</div><p class="small">Sounds right. The number may be invented or from the wrong year, and you can't tell.</p></div>
+<div class="card good"><b>Analyst Desk writes</b><div class="note">Revenue grew to <span class="ph">[REVENUE_2024]</span> in 2024.<br>&rarr; code fills <span class="v">$350.0 billion</span> from the filed data<br>&rarr; code checks it again <span class="v">&#10003; verified</span></div><p class="small">The AI never types a number. Code fetches it and checks it.</p></div></div>
+
+<h2>How a note is made (click a step)</h2>
+<div class="flow" id="flow"></div><div class="card" id="detail">Click a step to see what it does.</div>
+
+<h2>What happens to a bad request</h2>
+<div class="row"><div class="card"><b>"Should I buy this stock?"</b><p class="small">Stopped at the input guard. We write research, not investment advice.</p></div>
+<div class="card"><b>Hidden instruction inside a document</b><p class="small">Retrieved text is treated as data. Injection phrases are scrubbed and the writer has no power to act on them.</p></div></div>
+
+<h2>Results so far (dev set, 27 cases)</h2>
+<div class="card" id="res"></div>
+<p class="small">The fixed workflow matches the team on getting numbers right. The team's value is deeper analysis: about 15 analysis sentences per note against about 2. Some reruns are pending API credit. Details on the results page.</p>
+
+<h2>Tools</h2>
+<div class="tags"><span>LangGraph</span><span>FastMCP</span><span>OpenRouter models</span><span>BM25 + vector search (RRF)</span><span>Reranker</span><span>SEC 10-K + XBRL</span><span>Python sandbox</span><span>FastAPI</span><span>Docker Compose</span><span>GitHub Actions</span><span>Prometheus + Grafana</span></div>
+</div>
+<script>
+const S=[["Guard","Checks the request first: blocks advice requests, injections and off-topic asks."],["Memory","Loads the analyst's saved preferences and watchlist. Only whitelisted items are kept."],["Planner","Splits the question into research tasks and keeps them within budget."],["Researchers","Several agents search the filings at the same time using keyword + vector search."],["Quant","Does the calculations in a locked sandbox: no internet, no files, no shell."],["Writer","Drafts the note with placeholders instead of numbers, and cites passages."],["Critic","Reviews the draft and sends it back to be fixed, at most twice."],["Verify","Code fills each number from XBRL facts and re-checks every one. A mismatch blocks the note."],["Approval","A person approves the exact note. Any later change breaks the approval."]];
+const f=document.getElementById('flow'),d=document.getElementById('detail');
+S.forEach((s,i)=>{const e=document.createElement('div');e.className='step';e.innerHTML='<b>'+(i+1)+'</b>'+s[0];e.onclick=()=>{document.querySelectorAll('.step').forEach(x=>x.classList.remove('on'));e.classList.add('on');d.innerHTML='<b>'+s[0]+'</b><p>'+s[1]+'</p>'};f.appendChild(e);if(i<S.length-1){const a=document.createElement('div');a.className='arrow';a.textContent='›';f.appendChild(a)}});
+const R=[["Fixed workflow",27],["Single agent",21],["Team, critic off",25],["Full team (22 Nov run)",27]];
+document.getElementById('res').innerHTML=R.map(r=>'<div>'+r[0]+': <b>'+r[1]+' / 27</b> successful</div><div class="bar"><i style="width:'+(r[1]/27*100)+'%"></i></div>').join('');
+</script></body></html>
