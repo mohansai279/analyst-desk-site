@@ -11,7 +11,7 @@ main{max-width:980px;margin:0 auto;padding:32px 20px 80px}h1{font-size:2rem;marg
 .flow .h{border-color:#c77d12}.flow .c{border-color:var(--acc)}
 .note pre{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;font:13.5px/1.5 ui-monospace,Consolas,monospace}.cite{color:var(--mut);font-size:.8em}
 .small{color:var(--mut);font-size:.88rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.cards div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}.cards b{display:block;font-size:1.5rem}
-</style></head><body><p style="margin:12px 20px"><a href="how-it-works.html">Visual walkthrough: how it works &rarr;</a></p><main>
+</style></head><body><main>
 <h1>Analyst Desk</h1><p class="lead">A team of agents that writes finance research notes from SEC 10-K filings, where <b>every number traces to an XBRL fact</b> and a person approves the exact note before it is published. GenAI capstone, Project 5.</p>
 <div class="cards"><div><b>0</b>fabricated numbers in the full team on the dev set</div><div><b>78/78</b>red-team cases handled by code</div><div><b>4</b>MCP servers (EDGAR, filings search, Python sandbox, portal)</div><div><b>2</b>critic rounds max, token budget per note</div></div>
 <h2>How it works</h2>
@@ -36,7 +36,10 @@ Drivers and segment analysis
 <h2>Does table-aware chunking help? (BM25, 30 labelled queries)</h2>
 <table><tr><th>Retrieval setup</th><th>Recall@5</th></tr><tr><td>Table-aware chunks + company/year filters + table-intent routing</td><td>70.0%</td></tr>
 <tr><td>Table-aware chunks, no table-intent routing</td><td>16.7%</td></tr><tr><td>Plain-text chunks (tables flattened)</td><td>66.7%</td></tr></table>
-<p class="small">Chunk shape alone is not the win: the routing of numeric questions to tables does the work. Plain text is within one query of table-aware here. Plain-text gold uses a looser rule (label near number) because rows no longer exist. Dense search and reranking are pending (need API credit).</p>
+<p class="small">Chunk shape alone is not the win: the routing of numeric questions to tables does the work. Plain text is within one query of table-aware here. Plain-text gold uses a looser rule (label near number) because rows no longer exist. </p>
+<h2>Dense, hybrid and rerank (same 30 queries)</h2>
+<table><tr><th>Retrieval setup</th><th>Recall@5</th></tr><tr><td>BM25 only, no query analysis</td><td>3.3%</td></tr><tr><td>BM25 + query analysis (filters, expansion, table intent)</td><td>70.0%</td></tr><tr><td>Hybrid (BM25 + vectors, RRF), no analysis</td><td>10.0%</td></tr><tr><td>Hybrid + query analysis</td><td>80.0%</td></tr><tr><td>Hybrid + analysis + reranker</td><td>86.7%</td></tr></table>
+<p class="small">Understanding the question (which company, which year, is it a table) matters most. Vectors add 10 points and the reranker about 7 more. 30 queries, one run.</p>
 <h2>Security and memory</h2>
 <p>Sandbox: no network, no shell, no file access, empty environment (a real hole was found by our own test and fixed). Memory: four whitelisted style preferences, a private watchlist the model never sees, export and forget endpoints. Lessons from Reflexion are human-approved and frozen before the held-out run.</p>
 <h2>Limits, stated plainly</h2>
